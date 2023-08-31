@@ -95,6 +95,10 @@ class HTMLPurifier_ChildDef_Table extends HTMLPurifier_ChildDef
                 $ws_accum[] = $node;
                 continue;
             }
+            if ($node instanceof HTMLPurifier_Node_Text) {
+                $ws_accum[] = $node;
+                continue;
+            }
             switch ($node->name) {
             case 'tbody':
                 $tbody_mode = true;

@@ -166,7 +166,8 @@ class HTMLPurifier_Lexer
     protected $_special_entity2str =
         array(
             '&quot;' => '"',
-            '&amp;' => '&',
+            // on l'enlève de la liste car le calcul d'optimisation l.207 est faux si ce caractère est présent
+            // '&amp;' => '&',
             '&lt;' => '<',
             '&gt;' => '>',
             '&#39;' => "'",
@@ -205,16 +206,18 @@ class HTMLPurifier_Lexer
         if (!$num_amp) {
             return $string;
         } // abort if no entities
-        $num_esc_amp = substr_count($string, '&amp;');
-        $string = strtr($string, $this->_special_entity2str);
 
-        // code duplication for sake of optimization, see above
-        $num_amp_2 = substr_count($string, '&') - substr_count($string, '& ') -
-            ($string[strlen($string) - 1] === '&' ? 1 : 0);
+        // le calcul de l'optimisation est faux, donc on va faire sans
+        // $num_esc_amp = substr_count($string, '&amp;');
+        // $string = strtr($string, $this->_special_entity2str);
 
-        if ($num_amp_2 <= $num_esc_amp) {
-            return $string;
-        }
+        // // code duplication for sake of optimization, see above
+        // $num_amp_2 = substr_count($string, '&') - substr_count($string, '& ') -
+        //     ($string[strlen($string) - 1] === '&' ? 1 : 0);
+
+        // if ($num_amp_2 <= $num_esc_amp) {
+        //     return $string;
+        // }
 
         // hmm... now we have some uncommon entities. Use the callback.
         if ($config->get('Core.LegacyEntityDecoder')) {
@@ -323,7 +326,8 @@ class HTMLPurifier_Lexer
         // escape CDATA
         $html = $this->escapeCDATA($html);
 
-        $html = $this->removeIEConditional($html);
+        // Keep IE conditions in normalization
+        // $html = $this->removeIEConditional($html);
 
         // extract body from document if applicable
         if ($config->get('Core.ConvertDocumentToFragment')) {
